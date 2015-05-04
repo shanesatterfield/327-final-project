@@ -17,6 +17,15 @@ public class Server extends BaseServer
             socket = new DatagramSocket( port );
             System.out.printf(" on port %d\n", socket.getLocalPort());
 
+            byte[] buffer = new byte[255];
+
+            while( true )
+            {
+                DatagramPacket dp = new DatagramPacket( buffer, buffer.length );
+                socket.receive( dp );
+                System.out.println( new String(dp.getData(), 0, buffer.length) );
+            }
+
         } catch( Exception e ) {
             e.printStackTrace();
         } finally {

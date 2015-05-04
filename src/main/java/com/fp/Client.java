@@ -14,8 +14,19 @@ public class Client extends BaseServer
         System.out.print("Running client code");
         try {
 
-            socket = new DatagramSocket( port );
+            socket = new DatagramSocket();
             System.out.printf(" on port %d\n", socket.getLocalPort());
+
+            InetAddress serverAddress = InetAddress.getByName("localhost");
+
+            for( int i = 0; i < 10; ++i )
+            {
+                String message = Integer.toString( i );
+                byte[] data = message.getBytes();
+                DatagramPacket dp = new DatagramPacket( data, data.length, serverAddress, port );
+
+                socket.send( dp );
+            }
 
         } catch( Exception e ) {
             e.printStackTrace();
