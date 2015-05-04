@@ -7,14 +7,14 @@ public class Runner
     public static void main( String args[] )
     {
         setProperties( args );
-        System.out.printf("Running %s on port %d\n", ((type == SCType.SERVER) ? "server":"client"), port );
+        // System.out.printf("Running %s on port %d\n", ((type == SCType.SERVER) ? "server":"client"), port);
 
         // Determine which type of server to run. Whether it's the server or client.
         Runnable runnable;
         if( type == SCType.SERVER )
-            runnable = new Server();
+            runnable = new Server( port );
         else
-            runnable = new Client();
+            runnable = new Client( port );
 
         // Create and start the thread.
         server = new Thread( runnable );
@@ -31,7 +31,7 @@ public class Runner
     public static void setProperties( String args[] )
     {
         type = SCType.SERVER;
-        port = -1;
+        port = 0;
 
         for( String i: args )
         {
@@ -55,7 +55,7 @@ public class Runner
                 int tempPort = Integer.parseInt(i);
 
                 if( tempPort <= 1023 || tempPort > 65535 )
-                    tempPort = -1;
+                    tempPort = 0;
 
                 port = tempPort;
             }
@@ -63,6 +63,6 @@ public class Runner
     }
 
     public static SCType type = SCType.SERVER;
-    public static    int port = -1;
+    public static    int port = 0;
     public static Thread server;
 }

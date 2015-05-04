@@ -31,10 +31,10 @@ public class PropertiesParsingTest
             runner.setProperties( args );
             assertEquals( runner.port, Integer.parseInt(args[1]) );
 
-            // Test that over the max will be set to -1 for random.
+            // Test that over the max will be set to 0 for random.
             args[1] = "65536";
             runner.setProperties( args );
-            assertEquals( runner.port, -1 );
+            assertEquals( runner.port, 0 );
         }
     }
 
@@ -53,7 +53,7 @@ public class PropertiesParsingTest
             {
                 args[1] = Integer.toString(i);
                 runner.setProperties( args );
-                assertEquals( runner.port, -1 );
+                assertEquals( runner.port, 0 );
             }
         }
     }
@@ -68,7 +68,7 @@ public class PropertiesParsingTest
         {
             args[0] = type;
             runner.setProperties( args );
-            assertEquals( runner.port, -1 );
+            assertEquals( runner.port, 0 );
         }
 
         // Test that the privileged ports don't get used and below.
@@ -76,7 +76,7 @@ public class PropertiesParsingTest
         {
             args[0] = Integer.toString(i);
             runner.setProperties( args );
-            assertEquals( runner.port, -1 );
+            assertEquals( runner.port, 0 );
         }
 
         // Test for that the highest works.
@@ -84,10 +84,10 @@ public class PropertiesParsingTest
         runner.setProperties( args );
         assertEquals( runner.port, Integer.parseInt(args[0]) );
 
-        // Test that over the max will be set to -1 for random.
+        // Test that over the max will be set to 0 for random.
         args[0] = "65536";
         runner.setProperties( args );
-        assertEquals( runner.port, -1 );
+        assertEquals( runner.port, 0 );
     }
 
     @Test
