@@ -1,10 +1,13 @@
 package com.fp;
 
 import java.util.*;
+import java.util.concurrent.locks.*;
 
 public class Node {
   static final int string_length = 100;
+  public static Lock lock = new ReentrantLock();
   public String string;
+
   public Node() {
     this.string = this.makeString();
   }

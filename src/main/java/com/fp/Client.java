@@ -4,6 +4,9 @@ import java.net.*;
 
 public class Client extends BaseServer
 {
+    private DatagramSocket out_socket;
+    private DatagramSocket in_socket;
+
     Client( int port )
     {
         super( port );
@@ -14,18 +17,20 @@ public class Client extends BaseServer
         System.out.print("Running client code");
         try {
 
-            socket = new DatagramSocket();
-            System.out.printf(" on port %d\n", socket.getLocalPort());
+            out_socket = new DatagramSocket();
+            in_socket = new DatagramSocket(port);
 
+            System.out.printf(" on port %d\n", out_socket.getLocalPort());
             InetAddress serverAddress = InetAddress.getByName("localhost");
 
-            for( int i = 0; i < 10; ++i )
-            {
-                String message = Integer.toString( i );
-                byte[] data = message.getBytes();
-                DatagramPacket dp = new DatagramPacket( data, data.length, serverAddress, port );
+            while (true) {
+              byte[] buffer = new byte[255];
+              DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
+              in_socket.receive(dp);
+              String command = new String(dp.getData(), 0, buf.length);
+              switch (command) {
 
-                socket.send( dp );
+              }
             }
 
         } catch( Exception e ) {
@@ -37,5 +42,9 @@ public class Client extends BaseServer
         }
     }
 
-    private DatagramSocket socket;
+    private void send(String command) {
+      byte[] data = command.getBytes();
+      DatagramPacket dp = new DatagramPacket(data, data.length, serverAddress, port);
+      out_socket.send(dp);
+    }
 }
