@@ -3,6 +3,20 @@ apply plugin: 'application'
 
 mainClassName = 'com.fp.Runner'
 
+run {
+    if( project.hasProperty("type") ) {
+        args project.property("type")
+    }
+
+    if( project.hasProperty("port") ) {
+        args project.property("port")
+    }
+}
+
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
 }
