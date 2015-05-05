@@ -4,8 +4,6 @@ import java.net.*;
 
 public class Client extends BaseServer
 {
-    private DatagramSocket out_socket;
-    private DatagramSocket in_socket;
 
     Client( int port )
     {
@@ -17,20 +15,24 @@ public class Client extends BaseServer
         System.out.print("Running client code");
         try {
 
-            out_socket = new DatagramSocket();
-            in_socket = new DatagramSocket(port);
+            // TODO: Fix this so that the clients register with the server. Can't have sender and receiver on the same port.
+            socket = new DatagramSocket();
 
-            System.out.printf(" on port %d\n", out_socket.getLocalPort());
-            InetAddress serverAddress = InetAddress.getByName("localhost");
+            System.out.printf(" on port %d\n", socket.getLocalPort());
+            serverAddress = InetAddress.getByName("localhost");
 
-            while (true) {
-              byte[] buffer = new byte[255];
-              DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-              in_socket.receive(dp);
-              String command = new String(dp.getData(), 0, buf.length);
-              switch (command) {
+            // Starts the EventQeuue thread.
+            startEQ( socket.getLocalPort() );
 
-              }
+            while( true )
+            {
+                // Handles the events
+                while( eq.isEmpty() == false )
+                {
+                    eq.poll();
+                }
+
+                send("Things");
             }
 
         } catch( Exception e ) {
@@ -42,9 +44,12 @@ public class Client extends BaseServer
         }
     }
 
-    private void send(String command) {
+    private void send(String command) throws Exception {
       byte[] data = command.getBytes();
       DatagramPacket dp = new DatagramPacket(data, data.length, serverAddress, port);
-      out_socket.send(dp);
+      socket.send(dp);
     }
+
+    private DatagramSocket socket;
+    InetAddress serverAddress;
 }

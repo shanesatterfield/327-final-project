@@ -14,6 +14,7 @@ public class Server extends BaseServer
         System.out.print("Running server code");
         try {
 
+            /*
             socket = new DatagramSocket( port );
             System.out.printf(" on port %d\n", socket.getLocalPort());
 
@@ -25,15 +26,24 @@ public class Server extends BaseServer
                 socket.receive( dp );
                 System.out.println( new String(dp.getData(), 0, buffer.length) );
             }
+            */
+
+            startEQ( port );
+            setupSender();
+
+            while( true )
+            {
+                while( eq.isEmpty() == false )
+                    System.out.println( eq.poll() + "\t" + eq.events.size() );
+
+                send( "Hello World!", InetAddress.getByName("localhost"), 1230 );
+                Thread.sleep( 500 );
+            }
 
         } catch( Exception e ) {
             e.printStackTrace();
-        } finally {
-
-            if( socket != null )
-                socket.close();
         }
     }
 
-    private DatagramSocket socket;
+    // private DatagramSocket socket;
 }
