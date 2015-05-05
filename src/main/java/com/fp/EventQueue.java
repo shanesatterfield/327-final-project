@@ -27,7 +27,7 @@ public class EventQueue extends Thread
         }
     }
 
-    public String poll()
+    public synchronized String poll()
     {
         return events.poll();
     }
