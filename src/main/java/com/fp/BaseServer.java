@@ -2,7 +2,6 @@ package com.fp;
 
 import java.util.*;
 import java.net.*;
-import java.util.concurrent.*;
 import org.apache.commons.lang3.tuple.*;
 
 public abstract class BaseServer implements Runnable
@@ -15,9 +14,11 @@ public abstract class BaseServer implements Runnable
         } catch( Exception e ) {
             e.printStackTrace();
         }
-        Node nodes[] = new Node[100];
-        for (int i = 0; i < 100; i++)
-          nodes[i] = new Node();
+
+        for( int i = 0; i < nodes.length; ++i )
+        {
+            nodes[i] = new Node();
+        }
     }
 
     public abstract void run();
@@ -73,7 +74,8 @@ public abstract class BaseServer implements Runnable
     protected InetAddress addr;
     protected EventQueue eq;
     protected DatagramSocket sender;
-    protected Node[] nodes;
+
+    protected Node[] nodes = new Node[100];
 
     protected Map<Pair<InetAddress, Integer>, Pair<InetAddress, Integer>> registered = new HashMap<Pair<InetAddress, Integer>, Pair<InetAddress, Integer>>();
 }

@@ -58,8 +58,10 @@ public class Client extends BaseServer
                     register( dp.getAddress(), dp.getPort(), Integer.parseInt(mes[1].trim()) );
                     break;
                 case "OK":
-                    int node_num = Integer.parseInt(mes[1]);
-                    nodes[node_num].cond.signalAll();
+                    System.out.println("Ok received");
+                    int node_num = Integer.parseInt(mes[1].trim());
+                    nodes[node_num].hasToken = true;
+                    nodes[node_num].signalAll();
                     break;
 
                 default:
@@ -74,6 +76,7 @@ public class Client extends BaseServer
     }
 
     public synchronized void handleWorkerUpdate(int node_num) throws Exception {
+        nodes[node_num].hasToken = false;
         send("rel:" + node_num + ":" + nodes[node_num].string);
     }
 

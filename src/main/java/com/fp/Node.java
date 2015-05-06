@@ -17,7 +17,12 @@ public class Node {
   }
   public Node(String string) {
     this.string = string;
-  }
+    }
+    public void signalAll() {
+        lock.lock();
+        cond.signalAll();
+        lock.unlock();
+    }
   public String makeString() {
     String pool = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     Random r = new Random();
@@ -32,9 +37,14 @@ public class Node {
           while (!hasToken) {
               cond.await();
           }
-          List<String> characters = new ArrayList<String>(Arrays.asList(this.string.split("")));
-          Collections.shuffle(characters);
-          this.string = String.join("", characters);
+
+          System.out.printf("Editing\n");
+          this.string = makeString();
+
+        //   List<String> characters = new ArrayList<String>(Arrays.asList(this.string.split("")));
+        //   Collections.shuffle(characters);
+        //   this.string = String.join("", characters);
+
       } catch (Exception e) {
       } finally {
           lock.unlock();

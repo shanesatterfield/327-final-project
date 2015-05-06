@@ -11,12 +11,18 @@ public class Worker extends Thread {
         this.client = client;
   }
     public void run() {
-        try {
-            int node_num = rand.nextInt(100);
-            client.handleWorkerRequest(node_num);
-            nodes[node_num].shuffle();
-            client.handleWorkerUpdate(node_num);
-            Thread.sleep(500);
-        } catch (Exception e) {}
+        while( true )
+        {
+            try {
+                int node_num = rand.nextInt(100);
+                client.handleWorkerRequest(node_num);
+                nodes[node_num].shuffle();
+
+                System.out.println("Releasing node " + node_num);
+
+                client.handleWorkerUpdate(node_num);
+                Thread.sleep(500);
+            } catch (Exception e) {}
+        }
     }
 }
