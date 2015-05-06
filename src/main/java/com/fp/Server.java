@@ -5,9 +5,9 @@ import org.apache.commons.lang3.tuple.*;
 
 public class Server extends BaseServer
 {
-    Server( int port )
+    Server( int port, String addr )
     {
-        super( port );
+        super( port, addr );
     }
 
     public void run()

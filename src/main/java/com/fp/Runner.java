@@ -12,9 +12,9 @@ public class Runner
         // Determine which type of server to run. Whether it's the server or client.
         Runnable runnable;
         if( type == SCType.SERVER )
-            runnable = new Server( port );
+            runnable = new Server( port, addr );
         else
-            runnable = new Client( port );
+            runnable = new Client( port, addr );
 
         // Create and start the thread.
         server = new Thread( runnable );
@@ -43,9 +43,14 @@ public class Runner
                     case "s":
                         type = SCType.SERVER;
                         break;
+
                     case "client":
                     case "c":
                         type = SCType.CLIENT;
+                        break;
+
+                    default:
+                        addr = i;
                         break;
                 }
             }
@@ -64,5 +69,6 @@ public class Runner
 
     public static SCType type = SCType.SERVER;
     public static    int port = 0;
+    public static String addr = "localhost";
     public static Thread server;
 }

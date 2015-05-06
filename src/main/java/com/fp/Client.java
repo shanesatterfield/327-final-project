@@ -4,18 +4,15 @@ import java.net.*;
 
 public class Client extends BaseServer
 {
-
-    Client( int port )
+    Client( int port, String addr )
     {
-        super( port );
+        super( port, addr );
     }
 
     public void run()
     {
         System.out.println("Running client code");
         try {
-
-            serverAddress = InetAddress.getByName("localhost");
 
             // Starts the EventQeuue thread.
             startEQ( 0 );
@@ -24,7 +21,7 @@ public class Client extends BaseServer
             setupSender();
 
             // Register with the server.
-            send( "reg:" + Integer.toString(eq.getPort()), serverAddress, port );
+            send( "reg:" + Integer.toString(eq.getPort()), addr, port );
 
             while( true )
             {
@@ -39,12 +36,6 @@ public class Client extends BaseServer
             if( socket != null )
                 socket.close();
         }
-    }
-
-    private void send(String command) throws Exception {
-        byte[] data = command.getBytes();
-        DatagramPacket dp = new DatagramPacket(data, data.length, serverAddress, port);
-        socket.send(dp);
     }
 
     public void handleEvents()

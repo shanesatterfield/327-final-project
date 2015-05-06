@@ -11,6 +11,10 @@ run {
     if( project.hasProperty("port") ) {
         args project.property("port")
     }
+
+    if( project.hasProperty("addr") ) {
+        args project.property("addr")
+    }
 }
 
 repositories {

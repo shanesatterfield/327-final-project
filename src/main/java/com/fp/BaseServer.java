@@ -6,9 +6,14 @@ import org.apache.commons.lang3.tuple.*;
 
 public abstract class BaseServer implements Runnable
 {
-    BaseServer( int port )
+    BaseServer( int port, String addr )
     {
         this.port = port;
+        try {
+            this.addr = InetAddress.getByName( addr );
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     public abstract void run();
@@ -37,6 +42,11 @@ public abstract class BaseServer implements Runnable
         send( message, Pair.of( serverAddress, port ) );
     }
 
+    protected synchronized void send( String message ) throws Exception
+    {
+        send( message, Pair.of( addr, port ) );
+    }
+
     protected synchronized void send( String message, Pair<InetAddress, Integer> pair ) throws Exception
     {
         byte[] buffer = message.getBytes();
@@ -56,6 +66,7 @@ public abstract class BaseServer implements Runnable
     }
 
     protected int port;
+    protected InetAddress addr;
     protected EventQueue eq;
     protected DatagramSocket sender;
 
