@@ -73,6 +73,10 @@ public class Client extends BaseServer
         send("req:" + node_num);
     }
 
+    public synchronized void handleWorkerUpdate(int node_num) throws Exception {
+        send("rel:" + node_num + ":" + nodes[node_num].string);
+    }
+
     private DatagramSocket socket;
     InetAddress serverAddress;
     static final int num_workers = 100;

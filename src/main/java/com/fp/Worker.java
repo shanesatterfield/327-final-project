@@ -15,6 +15,7 @@ public class Worker extends Thread {
             int node_num = rand.nextInt(100);
             client.handleWorkerRequest(node_num);
             nodes[node_num].shuffle();
+            client.handleWorkerUpdate(node_num);
             Thread.sleep(500);
         } catch (Exception e) {}
     }
