@@ -32,9 +32,11 @@ public class Runner
     {
         type = SCType.SERVER;
         port = 0;
+        addr = "localhost";
 
         for( String i: args )
         {
+            // Sets the server type.
             if( i.matches("[a-zA-Z]+") )
             {
                 switch(i)
@@ -48,13 +50,11 @@ public class Runner
                     case "c":
                         type = SCType.CLIENT;
                         break;
-
-                    default:
-                        addr = i;
-                        break;
                 }
             }
 
+            // Sets the port number. If it's the server, it's the listening port.
+            // If it's the client, it's the target port.
             else if( i.matches("[-+]?[0-9]+") )
             {
                 int tempPort = Integer.parseInt(i);
@@ -63,6 +63,12 @@ public class Runner
                     tempPort = 0;
 
                 port = tempPort;
+            }
+
+            // Sets the address.
+            else
+            {
+                addr = i;
             }
         }
     }

@@ -106,5 +106,46 @@ public class PropertiesParsingTest
         }
     }
 
+    @Test
+    public void addressTest()
+    {
+        Runner runner = new Runner();
+        String args[] = new String[2];
+
+        for( String type: types )
+        {
+            args[0] = type;
+
+            args[1] = "localhost";
+            runner.setProperties( args );
+            assertEquals( runner.addr, args[1] );
+
+            args[1] = "192.168.1.11";
+            runner.setProperties( args );
+            assertEquals( runner.addr, args[1] );
+
+            args[1] = "123";
+            runner.setProperties( args );
+            assertEquals( runner.addr, "localhost" );
+        }
+
+        for( String type: types )
+        {
+            args[1] = type;
+
+            args[0] = "localhost";
+            runner.setProperties( args );
+            assertEquals( runner.addr, args[0] );
+
+            args[0] = "192.168.1.11";
+            runner.setProperties( args );
+            assertEquals( runner.addr, args[0] );
+
+            args[0] = "123";
+            runner.setProperties( args );
+            assertEquals( runner.addr, "localhost" );
+        }
+    }
+
     private String types[] = new String[]{"server", "s", "client", "c"};
 }
