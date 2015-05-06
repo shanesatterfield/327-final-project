@@ -12,27 +12,24 @@ public class Client extends BaseServer
 
     public void run()
     {
-        System.out.print("Running client code");
+        System.out.println("Running client code");
         try {
 
-            // TODO: Fix this so that the clients register with the server. Can't have sender and receiver on the same port.
-            socket = new DatagramSocket();
-
-            System.out.printf(" on port %d\n", socket.getLocalPort());
             serverAddress = InetAddress.getByName("localhost");
 
             // Starts the EventQeuue thread.
-            startEQ( socket.getLocalPort() );
+            startEQ( 0 );
+
+            // Sets up the socket for sending  datagram packets.
+            setupSender();
+
+            // Register with the server.
+            send( "reg:" + Integer.toString(eq.getPort()), serverAddress, port );
 
             while( true )
             {
                 // Handles the events
-                while( eq.isEmpty() == false )
-                {
-                    eq.poll();
-                }
-
-                send("Things");
+                handleEvents();
             }
 
         } catch( Exception e ) {
@@ -45,9 +42,30 @@ public class Client extends BaseServer
     }
 
     private void send(String command) throws Exception {
-      byte[] data = command.getBytes();
-      DatagramPacket dp = new DatagramPacket(data, data.length, serverAddress, port);
-      socket.send(dp);
+        byte[] data = command.getBytes();
+        DatagramPacket dp = new DatagramPacket(data, data.length, serverAddress, port);
+        socket.send(dp);
+    }
+
+    public void handleEvents()
+    {
+        while( eq.isEmpty() == false )
+        {
+            DatagramPacket dp  = eq.poll();
+            String message = EventQueue.getString( dp );
+            String mes[] = message.split(":");
+
+            switch( mes[0] )
+            {
+                case "reg":
+                    register( dp.getAddress(), dp.getPort(), Integer.parseInt(mes[1].trim()) );
+                    break;
+
+                default:
+                    System.out.printf("Received Message: %s\n", message);
+                    break;
+            }
+        }
     }
 
     private DatagramSocket socket;

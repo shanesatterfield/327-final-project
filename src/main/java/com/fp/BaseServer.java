@@ -1,7 +1,8 @@
 package com.fp;
 
+import java.util.*;
 import java.net.*;
-// import org.apache.commons.lang3.tuple.*;
+import org.apache.commons.lang3.tuple.*;
 
 public abstract class BaseServer implements Runnable
 {
@@ -11,7 +12,7 @@ public abstract class BaseServer implements Runnable
     }
 
     public abstract void run();
-    // public abstract void handleEvents();
+    public abstract void handleEvents() throws Exception;
 
     protected void startEQ( int eqPort )
     {
@@ -30,28 +31,33 @@ public abstract class BaseServer implements Runnable
         sender = new DatagramSocket();
     }
 
+
     protected synchronized void send( String message, InetAddress serverAddress, int port ) throws Exception
     {
+        send( message, Pair.of( serverAddress, port ) );
+    }
+
+    protected synchronized void send( String message, Pair<InetAddress, Integer> pair ) throws Exception
+    {
         byte[] buffer = message.getBytes();
-        DatagramPacket dp = new DatagramPacket(buffer, buffer.length, serverAddress, port);
+        DatagramPacket dp = new DatagramPacket(buffer, buffer.length, pair.getLeft(), pair.getRight() );
+        System.out.println( "Sending data to remote port#" + pair.getRight() + ": " + message );
         sender.send( dp );
     }
 
-    /*
-    protected synchronized void register( InetAddress addr, int port )
+    protected synchronized void register( InetAddress addr, int port1, int port2 )
     {
-        register( Pair.of( addr, port ) );
+        register( Pair.of( addr, port1 ), Pair.of( addr, port2 ) );
     }
 
-    protected synchronized void register( Pair<InetAddress, Integer> pair )
+    protected synchronized void register( Pair<InetAddress, Integer> pair1, Pair<InetAddress,Integer> pair2 )
     {
-        registered.put( pair );
+        registered.put( pair1, pair2 );
     }
-    */
 
     protected int port;
     protected EventQueue eq;
     protected DatagramSocket sender;
 
-    // protected map<Pair<InetAddress, Integer>, Pair<InetAddress, Integer>> registered;
+    protected Map<Pair<InetAddress, Integer>, Pair<InetAddress, Integer>> registered = new HashMap<Pair<InetAddress, Integer>, Pair<InetAddress, Integer>>();
 }

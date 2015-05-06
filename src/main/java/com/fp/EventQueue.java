@@ -2,19 +2,24 @@ package com.fp;
 
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class EventQueue extends Thread
 {
     EventQueue( int port )
     {
         this.port = port;
+        try {
+            socket = new DatagramSocket( port );
+            System.out.println("Listening on port " + socket.getLocalPort());
+        } catch( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     public void run()
     {
         try {
-
-            socket = new DatagramSocket( port );
             while( true )
             {
                 receive();
@@ -27,17 +32,22 @@ public class EventQueue extends Thread
         }
     }
 
-    public synchronized String poll()
+    public synchronized DatagramPacket poll()
     {
         return events.poll();
     }
 
     public void receive() throws Exception
     {
-        byte[] buffer = new byte[256];
+        byte[] buffer = new byte[ MAX_LENGTH ];
         DatagramPacket dp = new DatagramPacket( buffer, buffer.length );
         socket.receive( dp );
-        events.add( new String( dp.getData(), 0, buffer.length ) );
+        events.add( dp );
+    }
+
+    public static String getString( DatagramPacket dp )
+    {
+        return new String( dp.getData(), 0, MAX_LENGTH );
     }
 
     public Boolean isEmpty()
@@ -50,7 +60,14 @@ public class EventQueue extends Thread
         return socket;
     }
 
-    public Queue<String> events = new LinkedList<String>();
-    private DatagramSocket socket;
+    public int getPort()
+    {
+        return socket.getLocalPort();
+    }
+
+    public Queue< DatagramPacket > events = new ConcurrentLinkedQueue< DatagramPacket >();
+    public DatagramSocket socket;
     private int port;
+
+    public static final int MAX_LENGTH = 256;
 }

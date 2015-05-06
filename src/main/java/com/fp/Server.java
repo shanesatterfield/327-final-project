@@ -1,6 +1,7 @@
 package com.fp;
 
 import java.net.*;
+import org.apache.commons.lang3.tuple.*;
 
 public class Server extends BaseServer
 {
@@ -11,33 +12,18 @@ public class Server extends BaseServer
 
     public void run()
     {
-        System.out.print("Running server code");
+        System.out.println("Running server code");
         try {
 
-            /*
-            socket = new DatagramSocket( port );
-            System.out.printf(" on port %d\n", socket.getLocalPort());
-
-            byte[] buffer = new byte[255];
-
-            while( true )
-            {
-                DatagramPacket dp = new DatagramPacket( buffer, buffer.length );
-                socket.receive( dp );
-                System.out.println( new String(dp.getData(), 0, buffer.length) );
-            }
-            */
-
+            // Sets up the thread for receiving datagram packets.
             startEQ( port );
+
+            // Sets up the socket for sending  datagram packets.
             setupSender();
 
             while( true )
             {
-                while( eq.isEmpty() == false )
-                    System.out.println( eq.poll() + "\t" + eq.events.size() );
-
-                send( "Hello World!", InetAddress.getByName("localhost"), 1230 );
-                Thread.sleep( 500 );
+                handleEvents();
             }
 
         } catch( Exception e ) {
@@ -45,5 +31,24 @@ public class Server extends BaseServer
         }
     }
 
-    // private DatagramSocket socket;
+    public void handleEvents() throws Exception
+    {
+        while( eq.isEmpty() == false )
+        {
+            DatagramPacket dp  = eq.poll();
+            String message = EventQueue.getString( dp );
+            String mes[] = message.split(":");
+
+            switch( mes[0] )
+            {
+                case "reg":
+                    register( dp.getAddress(), dp.getPort(), Integer.parseInt(mes[1].trim()) );
+                    send("Response", registered.get( Pair.of(dp.getAddress(), dp.getPort()) ) );
+                    break;
+            }
+
+        }
+    }
+
+    private DatagramSocket socket;
 }
