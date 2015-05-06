@@ -84,6 +84,14 @@ public class Server extends BaseServer
                         send("OK:" + node_num, destination);
                     }
 
+                    for( Pair<InetAddress, Integer> i: registered.values() )
+                    {
+                        if( Pair.of(dp.getAddress(), dp.getPort()) != i )
+                        {
+                            send("upd:" + node_num + ":" + updated_value, i);
+                        }
+                    }
+
                     break;
             }
 

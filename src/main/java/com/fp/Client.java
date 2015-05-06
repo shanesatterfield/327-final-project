@@ -51,6 +51,7 @@ public class Client extends BaseServer
             DatagramPacket dp  = eq.poll();
             String message = EventQueue.getString( dp );
             String mes[] = message.split(":");
+            int node_num = 0;
 
             switch( mes[0] )
             {
@@ -59,9 +60,15 @@ public class Client extends BaseServer
                     break;
                 case "OK":
                     System.out.println("Ok received");
-                    int node_num = Integer.parseInt(mes[1].trim());
+                    node_num = Integer.parseInt(mes[1].trim());
                     nodes[node_num].hasToken = true;
                     nodes[node_num].signalAll();
+                    break;
+
+                case "upd":
+                    node_num = Integer.parseInt(mes[1].trim());
+                    String updated_value = mes[2].trim();
+                    nodes[node_num].string = updated_value;
                     break;
 
                 default:
