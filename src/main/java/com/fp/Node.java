@@ -5,11 +5,15 @@ import java.util.concurrent.locks.*;
 
 public class Node {
   static final int string_length = 100;
-  public static Lock lock = new ReentrantLock();
+  public Lock lock = new ReentrantLock();
+  // used to communicate who gets the lock between the client and the workers
+  public Condition cond = lock.newCondition();
   public String string;
+  public Boolean hasToken = false;
 
   public Node() {
-    this.string = this.makeString();
+    // this.string = this.makeString();
+    this.string = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
   }
   public Node(String string) {
     this.string = string;
@@ -23,8 +27,17 @@ public class Node {
     return ret.toString();
   }
   public void shuffle() {
-    List<String> characters = new ArrayList<String>(Arrays.asList(this.string.split("")));
-    Collections.shuffle(characters);
-    this.string = String.join("", characters);
-  }
+      lock.lock();
+      try {
+          while (!hasToken) {
+              cond.await();
+          }
+          List<String> characters = new ArrayList<String>(Arrays.asList(this.string.split("")));
+          Collections.shuffle(characters);
+          this.string = String.join("", characters);
+      } catch (Exception e) {
+      } finally {
+          lock.unlock();
+      }
+    }
 }

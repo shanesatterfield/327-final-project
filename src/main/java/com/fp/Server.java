@@ -1,6 +1,8 @@
 package com.fp;
 
 import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 import org.apache.commons.lang3.tuple.*;
 
 public class Server extends BaseServer
@@ -8,6 +10,9 @@ public class Server extends BaseServer
     Server( int port, String addr )
     {
         super( port, addr );
+        for (int i = 0; i < 100; i++) {
+            queues.add(new ConcurrentLinkedQueue<Pair<InetAddress, Integer>>());
+        }
     }
 
     public void run()
@@ -39,11 +44,34 @@ public class Server extends BaseServer
             String message = EventQueue.getString( dp );
             String mes[] = message.split(":");
 
+            int node_num = 0;
+
             switch( mes[0] )
             {
                 case "reg":
                     register( dp.getAddress(), dp.getPort(), Integer.parseInt(mes[1].trim()) );
                     send("Response", registered.get( Pair.of(dp.getAddress(), dp.getPort()) ) );
+                    break;
+                case "req":
+                    node_num = Integer.parseInt(mes[1]);
+                    if (nodes[node_num].hasToken) {
+                        nodes[node_num].hasToken = false;
+                        send("OK:" + node_num);
+                    }
+                    else {
+                        queues.get(node_num).add(Pair.of(dp.getAddress(), dp.getPort()));
+                    }
+                    break;
+                case "rel":
+                    node_num = Integer.parseInt(mes[1]);
+                    String updated_value = mes[2];
+                    nodes[node_num].string = updated_value;
+                    nodes[node_num].hasToken = true;
+                    if (queues.get(node_num).size() > 0) {
+                        Pair<InetAddress, Integer> destination = queues.get(node_num).poll();
+                        nodes[node_num].hasToken = false;
+                        send("OK:" + node_num, destination);
+                    }
                     break;
             }
 
@@ -51,4 +79,5 @@ public class Server extends BaseServer
     }
 
     private DatagramSocket socket;
+    private ArrayList<ConcurrentLinkedQueue<Pair<InetAddress, Integer>>> queues = new ArrayList<ConcurrentLinkedQueue<Pair<InetAddress, Integer>>>();
 }

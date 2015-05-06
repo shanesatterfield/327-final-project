@@ -23,6 +23,12 @@ public class Client extends BaseServer
             // Register with the server.
             send( "reg:" + Integer.toString(eq.getPort()), addr, port );
 
+            Worker[] workers = new Worker[num_workers];
+            for (int i = 0; i < num_workers; i++) {
+                workers[i] = new Worker(nodes, this);
+                workers[i].start();
+            }
+
             while( true )
             {
                 // Handles the events
@@ -51,6 +57,10 @@ public class Client extends BaseServer
                 case "reg":
                     register( dp.getAddress(), dp.getPort(), Integer.parseInt(mes[1].trim()) );
                     break;
+                case "OK":
+                    int node_num = Integer.parseInt(mes[1]);
+                    nodes[node_num].cond.signalAll();
+                    break;
 
                 default:
                     System.out.printf("Received Message: %s\n", message);
@@ -59,6 +69,11 @@ public class Client extends BaseServer
         }
     }
 
+    public synchronized void handleWorkerRequest(int node_num) throws Exception {
+        send("req:" + node_num);
+    }
+
     private DatagramSocket socket;
     InetAddress serverAddress;
+    static final int num_workers = 100;
 }
